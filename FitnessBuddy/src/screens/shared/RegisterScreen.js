@@ -2,13 +2,12 @@ import React, { useState, useContext } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '../../context/AuthContext';
 
 const RegisterScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const [showDropDown, setShowDropDown] = useState(false);
-  const { isLoading, register } = useContext(AuthContext);
+  const { register } = useContext(AuthContext);
   const userTypeList = [
     {
       label: 'Client',
@@ -29,7 +28,6 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
-      <Spinner visible={isLoading} />
       <View style={styles.container} behavior="padding">
         <Text style={styles.heading}>Register</Text>
         <View style={styles.inputContainer}>
@@ -37,6 +35,7 @@ const RegisterScreen = ({ navigation }) => {
             style={styles.inputMargin}
             label="Username"
             mode="outlined"
+            autoCorrect={false}
             value={username}
             onChangeText={text => setUsername(text)}
           />
@@ -52,6 +51,7 @@ const RegisterScreen = ({ navigation }) => {
             keyboardType="email-address"
             label="E-mail"
             mode="outlined"
+            autoCorrect={false}
             value={email}
             onChangeText={text => setEmail(text)}
           />
@@ -78,6 +78,7 @@ const RegisterScreen = ({ navigation }) => {
             style={styles.inputMargin}
             label="Password"
             mode="outlined"
+            autoCorrect={false}
             value={password}
             onChangeText={text => setPassword(text)}
             secureTextEntry
@@ -86,6 +87,7 @@ const RegisterScreen = ({ navigation }) => {
             style={styles.inputMargin}
             label="Confirm password"
             mode="outlined"
+            autoCorrect={false}
             value={confirmPassword}
             onChangeText={text => setConfirmPassword(text)}
             secureTextEntry

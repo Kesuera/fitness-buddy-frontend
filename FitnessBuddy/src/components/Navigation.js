@@ -98,6 +98,10 @@ const TopTabNavigator = () => {
         tabBarIndicatorStyle: {
           backgroundColor: colors.primary,
         },
+        tabBarLabelStyle: {
+          margin: 0,
+          padding: 0,
+        },
       }}
     >
       {userInfo.type == 'client' ? (

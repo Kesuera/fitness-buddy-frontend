@@ -1,24 +1,37 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, View, KeyboardAvoidingView } from 'react-native';
-import { TextInput, Button, Text, useTheme } from 'react-native-paper';
-import Spinner from 'react-native-loading-spinner-overlay';
+import {
+  TextInput,
+  Button,
+  Text,
+  Modal,
+  Portal,
+  useTheme,
+} from 'react-native-paper';
 import { AuthContext } from '../../context/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { isLoading, login } = useContext(AuthContext);
+  const [showError, setShowError] = useState(false);
+  const { login } = useContext(AuthContext);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
-      <Spinner visible={isLoading} />
+      <Portal>
+        <Modal visible={showError} onDismiss={() => setShowError(false)}>
+          <Text>Invalid username and password combination</Text>
+        </Modal>
+      </Portal>
+
       <View style={styles.container} behavior="padding">
         <Text style={styles.heading}>Login</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputMargin}
             label="Username"
+            autoCorrect={false}
             mode="outlined"
             value={username}
             onChangeText={text => setUsername(text)}
@@ -27,6 +40,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.inputMargin}
             label="Password"
             mode="outlined"
+            autoCorrect={false}
             value={password}
             onChangeText={text => setPassword(text)}
             secureTextEntry
@@ -35,9 +49,7 @@ const LoginScreen = ({ navigation }) => {
         <Button
           style={styles.buttonContainer}
           mode="contained"
-          onPress={() => {
-            login(username, password);
-          }}
+          onPress={() => setShowError(login(username, password))}
         >
           Login
         </Button>

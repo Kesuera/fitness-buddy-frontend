@@ -1,9 +1,11 @@
 import React, { useState, useEffect, createContext } from 'react';
+import { View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,15 +38,15 @@ export const AuthProvider = ({ children }) => {
         setUserInfo(userInfo);
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         console.log(userInfo);
+        setIsLoading(false);
       })
       .catch(e => {
         console.log(`register error ${e}`);
+        setIsLoading(false);
       });
-
-    setIsLoading(false);
   };
 
-  const login = (username, password) => {
+  const login = async (username, password) => {
     setIsLoading(true);
 
     axios
@@ -57,12 +59,12 @@ export const AuthProvider = ({ children }) => {
         setUserInfo(userInfo);
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         console.log(userInfo);
+        setIsLoading(false);
       })
       .catch(e => {
-        console.log(`register error ${e}`);
+        console.log(`Login error ${e}`);
+        setIsLoading(false);
       });
-
-    setIsLoading(false);
   };
 
   const logout = () => {
@@ -76,12 +78,12 @@ export const AuthProvider = ({ children }) => {
         console.log(res.data);
         AsyncStorage.removeItem('userInfo');
         setUserInfo({});
+        setIsLoading(false);
       })
       .catch(e => {
         console.log(`logout error ${e}`);
+        setIsLoading(false);
       });
-
-    setIsLoading(false);
   };
 
   const isLoggedIn = async () => {
@@ -94,21 +96,27 @@ export const AuthProvider = ({ children }) => {
       if (userInfo) {
         setUserInfo(userInfo);
       }
+      setSplashLoading(false);
     } catch (e) {
       console.log(`is logged in error ${e}`);
+      setSplashLoading(false);
     }
-
-    setSplashLoading(false);
   };
 
   useEffect(() => {
     isLoggedIn();
   }, []);
 
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1 }}>
+        <Spinner visible={true} />
+      </View>
+    );
+  }
   return (
     <AuthContext.Provider
       value={{
-        isLoading,
         userInfo,
         splashLoading,
         register,

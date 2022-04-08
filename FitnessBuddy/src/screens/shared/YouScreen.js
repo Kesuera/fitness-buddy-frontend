@@ -9,12 +9,11 @@ import {
   useTheme,
   Paragraph,
 } from 'react-native-paper';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '../../context/AuthContext';
 
 const YouScreen = () => {
   const { colors } = useTheme();
-  const { userInfo, isLoading, logout } = useContext(AuthContext);
+  const { userInfo, logout } = useContext(AuthContext);
 
   const getInitials = string => {
     var names = string.split(' '),
@@ -30,7 +29,6 @@ const YouScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Spinner visible={isLoading} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={styles.headerContainer}>
           <Avatar.Text label={initials} />

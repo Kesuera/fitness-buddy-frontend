@@ -8,7 +8,7 @@ const App = () => {
   return (
     <PaperProvider theme={{ ...DefaultTheme }}>
       <AuthProvider>
-        <StatusBar />
+        <StatusBar backgroundColor={'black'} />
         <Navigation />
       </AuthProvider>
     </PaperProvider>

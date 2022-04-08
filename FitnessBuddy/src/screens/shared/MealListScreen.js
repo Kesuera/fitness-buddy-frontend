@@ -1,15 +1,11 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { AuthContext } from '../../context/AuthContext';
 
 const MealListScreen = () => {
-  const { isLoading } = useContext(AuthContext);
-
   return (
     <View style={styles.container}>
-      <Spinner visible={isLoading} />
       <Text>Meal list screen</Text>
     </View>
   );
