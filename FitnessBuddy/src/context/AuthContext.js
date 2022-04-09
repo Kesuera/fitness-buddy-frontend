@@ -1,9 +1,9 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { BASE_URL } from '../config';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { BASE_URL } from '../config';
 
 export const AuthContext = createContext();
 
@@ -41,12 +41,18 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(false);
       })
       .catch(e => {
-        console.log(`register error ${e}`);
+        const res = e.response.data;
+        errMsg = '';
+        if (res.username) errMsg += res.username;
+        if (res.email) errMsg += '\n' + res.email;
+        if (res.phone_number) errMsg += '\n' + res.phone_number;
+
+        Alert.alert('Register error!', errMsg, [{ text: 'Okay' }]);
         setIsLoading(false);
       });
   };
 
-  const login = async (username, password) => {
+  const login = (username, password) => {
     setIsLoading(true);
 
     axios
@@ -64,6 +70,9 @@ export const AuthProvider = ({ children }) => {
       .catch(e => {
         console.log(`Login error ${e}`);
         setIsLoading(false);
+        Alert.alert('Invalid user!', 'Username or password is incorrect.', [
+          { text: 'Okay' },
+        ]);
       });
   };
 
@@ -82,6 +91,45 @@ export const AuthProvider = ({ children }) => {
       })
       .catch(e => {
         console.log(`logout error ${e}`);
+        setIsLoading(false);
+      });
+  };
+
+  const updateProfile = async (email, phone_number, description) => {
+    setIsLoading(true);
+
+    axios
+      .put(
+        `${BASE_URL}/user/update`,
+        {
+          email,
+          phone_number,
+          description,
+        },
+        {
+          headers: { Authorization: `Token ${userInfo.token}` },
+        }
+      )
+      .then(async () => {
+        let userInfo = await AsyncStorage.getItem('userInfo');
+        userInfo = JSON.parse(userInfo);
+
+        userInfo.email = email;
+        userInfo.phone_number = phone_number;
+        userInfo.description = description;
+
+        setUserInfo(userInfo);
+        AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+        setIsLoading(false);
+      })
+      .catch(e => {
+        const res = e.response.data;
+        errMsg = '';
+        if (res.email) errMsg += '\n' + res.email;
+        if (res.phone_number) errMsg += '\n' + res.phone_number;
+
+        Alert.alert('Update profile error!', errMsg, [{ text: 'Okay' }]);
+
         setIsLoading(false);
       });
   };
@@ -122,6 +170,7 @@ export const AuthProvider = ({ children }) => {
         register,
         login,
         logout,
+        updateProfile,
       }}
     >
       {children}

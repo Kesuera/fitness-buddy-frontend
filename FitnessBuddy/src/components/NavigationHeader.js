@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Appbar, useTheme } from 'react-native-paper';
+import { AuthContext } from '../context/AuthContext';
 
 const NavigationHeader = ({ title, navigation = null, goBack = null }) => {
   const { colors } = useTheme();
+  const { logout } = useContext(AuthContext);
 
   return (
     <Appbar.Header
@@ -18,6 +20,9 @@ const NavigationHeader = ({ title, navigation = null, goBack = null }) => {
         />
       ) : null}
       <Appbar.Content title={title} />
+      {title == 'You' ? (
+        <Appbar.Action icon="logout" onPress={() => logout()} />
+      ) : null}
     </Appbar.Header>
   );
 };
