@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       })
       .catch(e => {
         const res = e.response.data;
-        errMsg = '';
+        let errMsg = '';
         if (res.username) errMsg += res.username;
         if (res.email) errMsg += '\n' + res.email;
         if (res.phone_number) errMsg += '\n' + res.phone_number;
@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }) => {
       })
       .catch(e => {
         const res = e.response.data;
-        errMsg = '';
+        let errMsg = '';
         if (res.email) errMsg += '\n' + res.email;
         if (res.phone_number) errMsg += '\n' + res.phone_number;
 

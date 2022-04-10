@@ -49,14 +49,14 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   const handleEmailChange = text => {
-    if ((text = Validator.validateEmail)) {
+    if ((text = Validator.validateEmail(text))) {
       setEmail(text);
       setIsValidEmail(true);
     } else setIsValidEmail(false);
   };
 
   const handlePhoneNumberChange = text => {
-    if ((text = Validator.validiatePhoneNumber)) {
+    if ((text = Validator.validiatePhoneNumber(text))) {
       setPhoneNumber(text);
       setIsValidPhoneNumber(true);
     } else setIsValidPhoneNumber(false);
