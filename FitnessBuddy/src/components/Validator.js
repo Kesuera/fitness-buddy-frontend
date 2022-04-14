@@ -15,7 +15,9 @@ class Validator {
 
   validateEmail(text) {
     text = text.replace(/\s/g, '').toLowerCase();
-    return /^\S+@\S+\.\S+$/.test(text) ? text : false;
+    return /^[A-Za-z0-9 ]+@[A-Za-z0-9 ]+\.[A-Za-z ]+$/.test(text)
+      ? text
+      : false;
   }
 
   validiatePhoneNumber(text) {

@@ -20,7 +20,7 @@ const NavigationHeader = ({ title, navigation = null, goBack = null }) => {
         />
       ) : null}
       <Appbar.Content title={title} />
-      {title == 'You' ? (
+      {title === 'You' ? (
         <Appbar.Action icon="logout" onPress={() => logout()} />
       ) : null}
     </Appbar.Header>

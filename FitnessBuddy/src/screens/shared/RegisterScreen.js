@@ -115,7 +115,12 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerstyle={{ flexGrow: 1 }}>
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: 'center',
+      }}
+    >
       <View style={styles.container}>
         <Text style={styles.heading}>Register</Text>
         <View style={styles.inputContainer}>
