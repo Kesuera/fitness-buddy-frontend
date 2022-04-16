@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "245328273738",
+    "project_id": "mtaa---fitness-buddy",
+    "storage_bucket": "mtaa---fitness-buddy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245328273738:android:ad5d9e7691026c3038e1b3",
+        "android_client_info": {
+          "package_name": "com.mtaa.fitnessbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245328273738-gdpu6gd4hvoqr4a1mjrvdskl1crfc3o6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ2pk04xkEt2ni2Kly9efeHrEzG7sSCS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245328273738-gdpu6gd4hvoqr4a1mjrvdskl1crfc3o6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
