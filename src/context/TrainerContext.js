@@ -100,7 +100,7 @@ export const TrainerProvider = ({ children }) => {
       .then(res => res.json())
       .then(res => {
         const mealsCopy = [...meals];
-        const index = meals.findIndex(m => (m.id = meal.id));
+        const index = meals.findIndex(m => m.id === meal.id);
         mealsCopy[index].type = meal.type;
         mealsCopy[index].description = meal.description;
         mealsCopy[index].name = meal.name;
