@@ -7,33 +7,39 @@ const Tab = createStackNavigator();
 const TabNavigator = ({
   title,
   component,
-  childTitle = null,
-  childComponent = null,
+  headerShown = true,
+  children = [],
 }) => {
   return (
     <Tab.Navigator>
       <Tab.Screen
         options={{
           header: () => <NavigationHeader title={title} />,
+          headerShown: headerShown,
         }}
         name={title}
         component={component}
       />
-      {childTitle && childComponent ? (
-        <Tab.Screen
-          options={{
-            header: ({ navigation }) => (
-              <NavigationHeader
-                title={childTitle}
-                navigation={navigation}
-                goBack={title}
+      {children.length !== 0
+        ? children.map((child, i) => {
+            return (
+              <Tab.Screen
+                key={i}
+                options={{
+                  header: ({ navigation }) => (
+                    <NavigationHeader
+                      title={child.title}
+                      navigation={navigation}
+                      goBack={title}
+                    />
+                  ),
+                }}
+                name={child.title}
+                component={child.component}
               />
-            ),
-          }}
-          name={childTitle}
-          component={childComponent}
-        />
-      ) : null}
+            );
+          })
+        : null}
     </Tab.Navigator>
   );
 };

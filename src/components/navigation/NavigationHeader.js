@@ -3,16 +3,18 @@ import { Appbar, useTheme } from 'react-native-paper';
 import { AuthContext } from '../../context/AuthContext';
 
 // source code: https://github.com/amaialth/react-nav5/blob/master/src/navigation/util/StackHeader.js
-const NavigationHeader = ({ title, navigation = null, goBack = null }) => {
+const NavigationHeader = ({ title, navigation, goBack = null }) => {
   const { colors } = useTheme();
   const { logout } = useContext(AuthContext);
 
   return (
     <Appbar.Header
-      style={{ backgroundColor: colors.primary }}
+      style={{
+        backgroundColor: colors.primary,
+      }}
       statusBarHeight={0}
     >
-      {goBack ? (
+      {navigation?.canGoBack() ? (
         <Appbar.BackAction
           icon="arrow-left"
           onPress={() => {

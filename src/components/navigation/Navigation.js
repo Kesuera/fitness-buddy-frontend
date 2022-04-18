@@ -18,6 +18,7 @@ import YouScreen from '../../screens/shared/YouScreen';
 import FavouriteTrainersListScreen from '../../screens/client/FavouriteTrainersListScreen';
 import GettingCallScreen from '../../screens/shared/GettingCallScreen';
 import VideoCallScreen from '../../screens/shared/VideoCallScreen';
+import MealInfoScreen from '../../screens/shared/MealInfoScreen';
 import { AuthContext } from '../../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
@@ -28,34 +29,40 @@ const HomeNavigator = () => {
   const { userInfo } = useContext(AuthContext);
   const LeftTabComponent =
     userInfo.type === 'client' ? FindATrainerScreen : TopTabNavigator;
+  const leftTabLabel = userInfo.type === 'client' ? 'Find a trainer' : 'Home';
+  const children =
+    userInfo.type === 'client'
+      ? [{ title: 'Trainer profile', component: TopTabNavigator }]
+      : [{ title: 'Meal info', component: MealInfoScreen }];
 
   return (
     <TabNavigator
-      title={'Home'}
+      title={leftTabLabel}
       component={LeftTabComponent}
-      childTitle={userInfo.type === 'client' ? 'Trainer profile' : null}
-      childComponent={userInfo.type === 'client' ? TopTabNavigator : null}
+      children={children}
     />
   );
 };
 
 const FavouritesNavigator = () => {
   const { userInfo } = useContext(AuthContext);
-  const middleTabLabel =
-    userInfo.type === 'client' ? 'Favourites' : 'Followers';
-  const childLabel =
-    userInfo.type === 'client' ? 'Trainer profile' : 'Follower profile';
-  const ChildComponent =
-    userInfo.type === 'client' ? TopTabNavigator : UserProfileScreen;
   const MiddleTabComponent =
     userInfo.type === 'client' ? TopTabNavigator : FollowerListScreen;
+  const middleTabLabel =
+    userInfo.type === 'client' ? 'Favourites' : 'Followers';
+  const children =
+    userInfo.type === 'client'
+      ? [
+          { title: 'Trainer profile', component: TopTabNavigator },
+          { title: 'Meal info', component: MealInfoScreen },
+        ]
+      : [{ title: 'Follower profile', component: UserProfileScreen }];
 
   return (
     <TabNavigator
       title={middleTabLabel}
       component={MiddleTabComponent}
-      childTitle={childLabel}
-      childComponent={ChildComponent}
+      children={children}
     />
   );
 };
@@ -108,10 +115,10 @@ const BottomTabNavigator = () => {
   const { colors } = useTheme();
   const middleTabLabel =
     userInfo.type === 'client' ? 'Favourites' : 'Followers';
+  const leftTabLabel = userInfo.type === 'client' ? 'Find a trainer' : 'Home';
 
   return (
     <BottomTab.Navigator
-      initialRouteName="Home navigator"
       activeColor={colors.primary}
       inactiveColor={colors.backdrop}
       barStyle={{
@@ -126,12 +133,16 @@ const BottomTabNavigator = () => {
       }}
     >
       <BottomTab.Screen
-        name="Home navigator"
+        name={`${leftTabLabel} navigator`}
         component={HomeNavigator}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: leftTabLabel,
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="home" color={color} size={24} />
+            <MaterialCommunityIcons
+              name={userInfo.type === 'client' ? 'magnify' : 'home'}
+              color={color}
+              size={24}
+            />
           ),
         }}
       />

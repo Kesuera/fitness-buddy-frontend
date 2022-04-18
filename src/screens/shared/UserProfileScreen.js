@@ -4,6 +4,7 @@ import {
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import {
   IconButton,
@@ -18,7 +19,7 @@ import { TrainerContext } from '../../context/TrainerContext';
 import { AuthContext } from '../../context/AuthContext';
 import { VideoCallContext } from '../../context/VideoCallContext';
 
-const UserProfileScreen = ({ route }) => {
+const UserProfileScreen = ({ route, navigation }) => {
   const { colors } = useTheme();
   const { userID } = route.params;
   const { userInfo } = useContext(AuthContext);
@@ -34,6 +35,11 @@ const UserProfileScreen = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       const user = await getUserInfo(userID);
+      if (!user) {
+        navigation.pop();
+        Alert.alert('Error!', 'User does not exist.', [{ text: 'Okay' }]);
+        return;
+      }
       setProfileInfo(user);
       setInitials(getInitials(user.full_name));
     };

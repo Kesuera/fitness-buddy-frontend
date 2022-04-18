@@ -59,7 +59,6 @@ export const AuthProvider = ({ children }) => {
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
       })
       .catch(e => {
-        console.log(`Login error ${e}`);
         Alert.alert('Invalid user!', 'Username or password is incorrect.', [
           { text: 'Okay' },
         ]);
@@ -76,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         setUserInfo({});
       })
       .catch(e => {
-        console.log(`logout error ${e}`);
+        Alert.alert('Logout error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
 
@@ -125,7 +124,6 @@ export const AuthProvider = ({ children }) => {
       }
       setSplashLoading(false);
     } catch (e) {
-      console.log(`is logged in error ${e}`);
       setSplashLoading(false);
     }
   };

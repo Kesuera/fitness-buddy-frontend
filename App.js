@@ -13,16 +13,16 @@ const App = () => {
   return (
     <PaperProvider theme={{ ...DefaultTheme }}>
       <AuthProvider>
-        <ClientProvider>
-          <TrainerProvider>
+        <TrainerProvider>
+          <ClientProvider>
             <VideoCallProvider>
               <StatusBar backgroundColor={'black'} />
               <NavigationContainer ref={navigationRef}>
                 <Navigation />
               </NavigationContainer>
             </VideoCallProvider>
-          </TrainerProvider>
-        </ClientProvider>
+          </ClientProvider>
+        </TrainerProvider>
       </AuthProvider>
     </PaperProvider>
   );

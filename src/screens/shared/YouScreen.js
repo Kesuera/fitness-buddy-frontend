@@ -1,11 +1,5 @@
-import React, { useContext, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Alert,
-} from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Keyboard, Alert } from 'react-native';
 import {
   Text,
   Avatar,
@@ -31,6 +25,21 @@ const YouScreen = () => {
   const [isValidDescription, setIsValidDescription] = useState(
     userInfo.description ? true : false
   );
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardOpen(true);
+    });
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardOpen(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   const getInitials = string => {
     var names = string.split(' '),
@@ -90,8 +99,8 @@ const YouScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.headerContainer}>
           <View style={styles.userHeaderContainer}>
             <Avatar.Text label={initials} />
@@ -107,6 +116,7 @@ const YouScreen = () => {
           {isEditing ? (
             <>
               <TextInput
+                onSubmitEditing={Keyboard.dismiss}
                 mode="outlined"
                 value={description}
                 onChangeText={text => handleDescriptionChange(text)}
@@ -135,6 +145,7 @@ const YouScreen = () => {
           {isEditing ? (
             <>
               <TextInput
+                onSubmitEditing={Keyboard.dismiss}
                 keyboardType="visible-password"
                 label="E-mail"
                 mode="outlined"
@@ -147,6 +158,7 @@ const YouScreen = () => {
                 <ValidationError errorMsg={'Invalid e-mail.'} />
               )}
               <TextInput
+                onSubmitEditing={Keyboard.dismiss}
                 keyboardType="phone-pad"
                 label="Phone number"
                 mode="outlined"
@@ -171,16 +183,18 @@ const YouScreen = () => {
             </Paragraph>
           )}
         </View>
-        {isEditing ? (
-          <FAB
-            style={[
-              styles.editCancelButton,
-              { backgroundColor: colors.background },
-            ]}
-            icon="close"
-            onPress={() => handleEditCancel()}
-          />
-        ) : null}
+      </ScrollView>
+      {isEditing && !keyboardOpen ? (
+        <FAB
+          style={[
+            styles.editCancelButton,
+            { backgroundColor: colors.background },
+          ]}
+          icon="close"
+          onPress={() => handleEditCancel()}
+        />
+      ) : null}
+      {!keyboardOpen ? (
         <FAB
           style={[styles.editButton, { backgroundColor: colors.primary }]}
           icon={isEditing ? 'check' : 'pencil'}
@@ -189,8 +203,8 @@ const YouScreen = () => {
             else setIsEditing(!isEditing);
           }}
         />
-      </KeyboardAvoidingView>
-    </ScrollView>
+      ) : null}
+    </View>
   );
 };
 
@@ -198,7 +212,7 @@ export default YouScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     padding: 24,
   },
   headerContainer: {

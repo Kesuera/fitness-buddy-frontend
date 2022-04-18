@@ -70,7 +70,7 @@ const FindATrainerScreen = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <Searchbar
         style={styles.searchBar}
-        placeholder="Search trainers"
+        placeholder="Search"
         onChangeText={onChangeSearch}
         value={searchQuery}
       />

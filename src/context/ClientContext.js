@@ -22,12 +22,12 @@ export const ClientProvider = ({ children }) => {
         setFavTrainers(favTrainers);
       })
       .catch(e => {
-        console.log(`get trainers error ${e}`);
+        Alert.alert('Trainers error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
 
   const getUserInfo = userID => {
-    const stack = trainers;
+    const stack = [...trainers];
     const index = stack.findIndex(trainer => trainer.id === userID);
 
     if (index !== -1 && stack[index].type) {
@@ -48,7 +48,9 @@ export const ClientProvider = ({ children }) => {
         return data;
       })
       .catch(e => {
-        console.log(`get user info error ${e}`);
+        stack.splice(index, 1);
+        setTrainers(stack);
+        return null;
       });
   };
 
@@ -84,7 +86,7 @@ export const ClientProvider = ({ children }) => {
         setTrainers(trainersCopy);
       })
       .catch(e => {
-        console.log(`follow trainer error ${e}`);
+        Alert.alert('Follow error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
 
@@ -113,7 +115,7 @@ export const ClientProvider = ({ children }) => {
         }
       })
       .catch(e => {
-        console.log(`unfollow trainer error ${e}`);
+        Alert.alert('Unfollow error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
 

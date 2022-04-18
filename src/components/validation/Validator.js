@@ -30,6 +30,11 @@ class Validator {
     return text.length >= 6 && text.length <= 256 ? text : false;
   }
 
+  validateMealAttribute(text) {
+    text = text.replace(/\s+/g, ' ');
+    return text.length >= 4 && text.length <= 100 ? text : false;
+  }
+
   validateDescription(text) {
     text = text.replace(/\s+/g, ' ').trim();
     return text.length >= 10 && text.length <= 500 ? text : false;
