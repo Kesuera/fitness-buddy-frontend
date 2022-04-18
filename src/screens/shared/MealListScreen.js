@@ -5,19 +5,32 @@ import { TrainerContext } from '../../context/TrainerContext';
 import { AuthContext } from '../../context/AuthContext';
 import { ClientContext } from '../../context/ClientContext';
 
-const MealListScreen = ({ navigation }) => {
-  const { colors } = useTheme();
-  const { meals, getMeals, deleteMeal } = useContext(TrainerContext);
+const MealListScreen = ({ navigation, route }) => {
   const { userInfo } = useContext(AuthContext);
-  const { followTrainer, unfollowTrainer } =
+  const { colors } = useTheme();
+  const { deleteMeal } =
+    userInfo.type === 'trainer' ? useContext(TrainerContext) : {};
+  const { getTrainerMeals } =
+    userInfo.type === 'client' ? useContext(ClientContext) : {};
+  const { meals, getMeals } =
+    userInfo.type === 'trainer'
+      ? useContext(TrainerContext)
+      : useContext(ClientContext);
+  const [trainerMeals, setTrainerMeals] = useState([]);
+  const { favTrainers } =
     userInfo.type === 'trainer' ? {} : useContext(ClientContext);
 
   useEffect(() => {
     const fetchData = async () => {
-      await getMeals();
+      if (route.params?.userID) {
+        const data = await getTrainerMeals(route.params.userID);
+        setTrainerMeals(data);
+      } else {
+        await getMeals();
+      }
     };
     fetchData();
-  }, [followTrainer, unfollowTrainer]);
+  }, [favTrainers]);
 
   const handleDelete = mealInfo => {
     Alert.alert(`Deleting ${mealInfo.name}`, 'Are you sure?', [
@@ -71,44 +84,68 @@ const MealListScreen = ({ navigation }) => {
             style={{ backgroundColor: colors.background }}
             title="Breakfast"
           >
-            {meals
-              .filter(meal => meal.type === 'breakfast')
-              .map(itemInfo => {
-                return item(itemInfo);
-              })}
+            {route.params?.userID
+              ? trainerMeals
+                  .filter(meal => meal.type === 'breakfast')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })
+              : meals
+                  .filter(meal => meal.type === 'breakfast')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })}
           </List.Accordion>
 
           <List.Accordion
             style={{ backgroundColor: colors.background }}
             title="Lunch"
           >
-            {meals
-              .filter(meal => meal.type === 'lunch')
-              .map(itemInfo => {
-                return item(itemInfo);
-              })}
+            {route.params?.userID
+              ? trainerMeals
+                  .filter(meal => meal.type === 'lunch')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })
+              : meals
+                  .filter(meal => meal.type === 'lunch')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })}
           </List.Accordion>
 
           <List.Accordion
             style={{ backgroundColor: colors.background }}
             title="Dinner"
           >
-            {meals
-              .filter(meal => meal.type === 'dinner')
-              .map(itemInfo => {
-                return item(itemInfo);
-              })}
+            {route.params?.userID
+              ? trainerMeals
+                  .filter(meal => meal.type === 'dinner')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })
+              : meals
+                  .filter(meal => meal.type === 'dinner')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })}
           </List.Accordion>
 
           <List.Accordion
             style={{ backgroundColor: colors.background }}
             title="Deserts"
           >
-            {meals
-              .filter(meal => meal.type === 'desert')
-              .map(itemInfo => {
-                return item(itemInfo);
-              })}
+            {route.params?.userID
+              ? trainerMeals
+                  .filter(meal => meal.type === 'desert')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })
+              : meals
+                  .filter(meal => meal.type === 'desert')
+                  .map(itemInfo => {
+                    return item(itemInfo);
+                  })}
           </List.Accordion>
         </List.Section>
       </ScrollView>

@@ -32,7 +32,10 @@ const HomeNavigator = () => {
   const leftTabLabel = userInfo.type === 'client' ? 'Find a trainer' : 'Home';
   const children =
     userInfo.type === 'client'
-      ? [{ title: 'Trainer profile', component: TopTabNavigator }]
+      ? [
+          { title: 'Trainer profile', component: TopTabNavigator },
+          { title: 'Meal info', component: MealInfoScreen },
+        ]
       : [{ title: 'Meal info', component: MealInfoScreen }];
 
   return (
@@ -105,7 +108,11 @@ const TopTabNavigator = ({ route }) => {
       ) : null}
       <TopTab.Screen name="Events" component={EventListScreen} />
       <TopTab.Screen name="Workouts" component={WorkoutListScreen} />
-      <TopTab.Screen name="Meals" component={MealListScreen} />
+      <TopTab.Screen
+        name="Meals"
+        initialParams={route.params}
+        component={MealListScreen}
+      />
     </TopTab.Navigator>
   );
 };

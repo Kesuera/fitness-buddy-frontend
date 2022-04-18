@@ -24,9 +24,9 @@ export const TrainerProvider = ({ children }) => {
       });
   };
 
-  const getMeals = () => {
+  const getMeals = userID => {
     axios
-      .get(`${BASE_URL}/meal/user/${userInfo.id}`, {
+      .get(`${BASE_URL}/meal/user/${userID ? userID : userInfo.id}`, {
         headers: { Authorization: `Token ${userInfo.token}` },
       })
       .then(res => {
@@ -41,7 +41,7 @@ export const TrainerProvider = ({ children }) => {
     const stack = [...meals];
     const index = stack.findIndex(meal => meal.id === mealID);
 
-    if (index !== -1 && stack[index].calories) {
+    if (index !== -1 && stack[index].trainer_username) {
       return stack[index];
     }
 
@@ -55,8 +55,10 @@ export const TrainerProvider = ({ children }) => {
         return res.data;
       })
       .catch(e => {
-        stack.splice(index, 1);
-        setMeals(stack);
+        if (index !== -1) {
+          stack.splice(index, 1);
+          setMeals(stack);
+        }
         return null;
       });
   };
@@ -217,7 +219,7 @@ export const TrainerProvider = ({ children }) => {
               createMeal,
               deleteMeal,
             }
-          : { meals, getMeals, getMealInfo, getMealPhoto }
+          : { getMealPhoto }
       }
     >
       {children}

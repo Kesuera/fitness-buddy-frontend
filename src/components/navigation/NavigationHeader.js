@@ -3,7 +3,7 @@ import { Appbar, useTheme } from 'react-native-paper';
 import { AuthContext } from '../../context/AuthContext';
 
 // source code: https://github.com/amaialth/react-nav5/blob/master/src/navigation/util/StackHeader.js
-const NavigationHeader = ({ title, navigation, goBack = null }) => {
+const NavigationHeader = ({ title, navigation }) => {
   const { colors } = useTheme();
   const { logout } = useContext(AuthContext);
 
@@ -18,7 +18,7 @@ const NavigationHeader = ({ title, navigation, goBack = null }) => {
         <Appbar.BackAction
           icon="arrow-left"
           onPress={() => {
-            navigation.navigate(goBack);
+            navigation.pop();
           }}
         />
       ) : null}

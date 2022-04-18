@@ -21,12 +21,17 @@ import { AuthContext } from '../../context/AuthContext';
 import Validator from '../../components/validation/Validator';
 import ValidationError from '../../components/validation/ValidationError';
 import { BASE_URL } from '../../config';
+import { ClientContext } from '../../context/ClientContext';
 
 const MealInfoScreen = ({ route, navigation }) => {
   const { colors } = useTheme();
   const { mealID } = route.params;
   const { userInfo } = useContext(AuthContext);
-  const { getMealInfo, updateMeal, createMeal } = useContext(TrainerContext);
+  const { getMealInfo } =
+    userInfo.type === 'trainer'
+      ? useContext(TrainerContext)
+      : useContext(ClientContext);
+  const { updateMeal, createMeal } = useContext(TrainerContext);
   const [mealInfo, setMealInfo] = useState({});
   const [isEditing, setIsEditing] = mealID ? useState(false) : useState(true);
   const [name, setName] = useState('');
@@ -77,7 +82,7 @@ const MealInfoScreen = ({ route, navigation }) => {
       showSubscription.remove();
       hideSubscription.remove();
     };
-  }, [updateMeal]);
+  }, []);
 
   const handleChooseImage = () => {
     launchImageLibrary({ noData: true }, res => {

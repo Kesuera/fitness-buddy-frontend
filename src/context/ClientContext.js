@@ -1,4 +1,5 @@
 import React, { useState, createContext, useContext } from 'react';
+import { Alert } from 'react-native';
 import axios from 'axios';
 import { BASE_URL } from '../config';
 import { AuthContext } from './AuthContext';
@@ -8,7 +9,80 @@ export const ClientContext = createContext();
 export const ClientProvider = ({ children }) => {
   const [trainers, setTrainers] = useState([]);
   const [favTrainers, setFavTrainers] = useState([]);
+  const [meals, setMeals] = useState([]);
+  const [trainerMeals, setTrainerMeals] = useState([]);
   const { userInfo } = useContext(AuthContext);
+
+  const getMealInfo = mealID => {
+    const stackMeals = [...meals];
+    const stackTrainerMeals = [...trainerMeals];
+    const indexMeals = stackMeals.findIndex(meal => meal.id === mealID);
+    const indexTrainerMeals = stackTrainerMeals.findIndex(
+      obj => obj.meals.findIndex(meal => meal.id === mealID) !== -1
+    );
+    let indexInTrainerMeals = -1;
+
+    if (indexMeals !== -1 && stackMeals[indexMeals].trainer_username) {
+      return stackMeals[indexMeals];
+    }
+
+    if (indexTrainerMeals !== -1) {
+      indexInTrainerMeals = stackTrainerMeals[
+        indexTrainerMeals
+      ].meals.findIndex(meal => meal.id === mealID);
+      if (
+        indexInTrainerMeals !== -1 &&
+        stackTrainerMeals[indexTrainerMeals].meals[indexInTrainerMeals]
+          .trainer_username
+      ) {
+        return stackTrainerMeals[indexTrainerMeals].meals[indexInTrainerMeals];
+      }
+    }
+
+    return axios
+      .get(`${BASE_URL}/meal/${mealID}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        stackMeals[indexMeals] = res.data;
+        setMeals(stackMeals);
+
+        if (indexInTrainerMeals !== -1) {
+          stackTrainerMeals[indexTrainerMeals].meals[indexInTrainerMeals] =
+            res.data;
+          setTrainerMeals(stackTrainerMeals);
+        }
+
+        return res.data;
+      })
+      .catch(e => {
+        if (indexMeals !== -1) {
+          stackMeals.splice(indexMeals, 1);
+          setMeals(stackMeals);
+        }
+        if (indexInTrainerMeals !== -1) {
+          stackTrainerMeals[indexTrainerMeals].meals.splice(
+            indexInTrainerMeals,
+            1
+          );
+          setTrainerMeals(stackTrainerMeals);
+        }
+        return null;
+      });
+  };
+
+  const getMeals = userID => {
+    axios
+      .get(`${BASE_URL}/meal/user/${userID ? userID : userInfo.id}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        setMeals(res.data);
+      })
+      .catch(e => {
+        Alert.alert('Meals error!', `${e}`, [{ text: 'Okay' }]);
+      });
+  };
 
   const getTrainers = () => {
     axios
@@ -23,6 +97,32 @@ export const ClientProvider = ({ children }) => {
       })
       .catch(e => {
         Alert.alert('Trainers error!', `${e}`, [{ text: 'Okay' }]);
+      });
+  };
+
+  const getTrainerMeals = userID => {
+    const index =
+      trainerMeals.length !== 0
+        ? trainerMeals.findIndex(obj => obj.trainer_id === userID)
+        : -1;
+
+    if (index !== -1) {
+      return trainerMeals[index].meals;
+    }
+
+    return axios
+      .get(`${BASE_URL}/meal/user/${userID}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        const data = [...trainerMeals];
+        data.push({ trainer_id: userID, meals: res.data });
+        setTrainerMeals(data);
+        return res.data;
+      })
+      .catch(e => {
+        Alert.alert('Meals error!', `${e}`, [{ text: 'Okay' }]);
+        return null;
       });
   };
 
@@ -124,12 +224,16 @@ export const ClientProvider = ({ children }) => {
       value={
         userInfo.type === 'client'
           ? {
+              meals,
               trainers,
               favTrainers,
               getUserInfo,
               getTrainers,
               followTrainer,
               unfollowTrainer,
+              getTrainerMeals,
+              getMeals,
+              getMealInfo,
             }
           : null
       }
