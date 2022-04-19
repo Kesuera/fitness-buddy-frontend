@@ -75,6 +75,11 @@ export const AuthProvider = ({ children }) => {
         setUserInfo({});
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          AsyncStorage.removeItem('userInfo');
+          setUserInfo({});
+          return;
+        }
         Alert.alert('Logout error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -104,6 +109,10 @@ export const AuthProvider = ({ children }) => {
         AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         const res = e.response.data;
         let errMsg = '';
         if (res.email) errMsg += '\n' + res.email;
@@ -124,6 +133,7 @@ export const AuthProvider = ({ children }) => {
       }
       setSplashLoading(false);
     } catch (e) {
+      logout();
       setSplashLoading(false);
     }
   };

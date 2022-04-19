@@ -9,7 +9,7 @@ export const TrainerContext = createContext();
 export const TrainerProvider = ({ children }) => {
   const [followers, setFollowers] = useState([]);
   const [meals, setMeals] = useState([]);
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, logout } = useContext(AuthContext);
 
   const getFollowers = () => {
     axios
@@ -20,6 +20,10 @@ export const TrainerProvider = ({ children }) => {
         setFollowers(res.data);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Followers error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -33,6 +37,10 @@ export const TrainerProvider = ({ children }) => {
         setMeals(res.data);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Meals error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -55,10 +63,18 @@ export const TrainerProvider = ({ children }) => {
         return res.data;
       })
       .catch(e => {
-        if (index !== -1) {
-          stack.splice(index, 1);
-          setMeals(stack);
+        if (e.response.status === 401) {
+          logout();
+          return;
         }
+        if (e.response.status === 404) {
+          if (index !== -1) {
+            stack.splice(index, 1);
+            setMeals(stack);
+          }
+          return null;
+        }
+        Alert.alert('Meal error!', `${e}`, [{ text: 'Okay' }]);
         return null;
       });
   };
@@ -74,6 +90,10 @@ export const TrainerProvider = ({ children }) => {
       });
       return res.data;
     } catch (e) {
+      if (e.response.status === 401) {
+        logout();
+        return null;
+      }
       return null;
     }
   };
@@ -111,6 +131,10 @@ export const TrainerProvider = ({ children }) => {
         setMeals(mealsCopy);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Update meal error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -146,6 +170,10 @@ export const TrainerProvider = ({ children }) => {
         setMeals(mealsCopy);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Create meal error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -162,6 +190,10 @@ export const TrainerProvider = ({ children }) => {
         setMeals(data);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Delete error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -197,8 +229,16 @@ export const TrainerProvider = ({ children }) => {
         return data;
       })
       .catch(e => {
-        stack.splice(index, 1);
-        setFollowers(stack);
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
+        if (e.response.status === 404) {
+          stack.splice(index, 1);
+          setFollowers(stack);
+          return null;
+        }
+        Alert.alert('User error!', `${e}`, [{ text: 'Okay' }]);
         return null;
       });
   };
