@@ -9,6 +9,7 @@ export const TrainerContext = createContext();
 export const TrainerProvider = ({ children }) => {
   const [followers, setFollowers] = useState([]);
   const [meals, setMeals] = useState([]);
+  const [events, setAllEvents] = useState([]);
   const { userInfo } = useContext(AuthContext);
 
   const getFollowers = () => {
@@ -63,6 +64,52 @@ export const TrainerProvider = ({ children }) => {
       });
   };
 
+  const getAllEvents = userID => {
+    axios
+      .get(`${BASE_URL}/event/user/${userID ? userID : userInfo.id}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        //console.log(res.data);
+        let events = res.data;
+        //console.log(events);
+        setAllEvents(events);
+      }
+      )
+      .catch(e => {
+        Alert.alert(`Events error u trenera!`, `${e}`, [{ text: 'Okay' }]);
+      });
+  }
+
+  const getEventInfo = eventID => {
+    const stack = [...events];
+    const index = stack.findIndex(oneEvent => oneEvent.id === eventID);
+
+    if (index !== -1 && stack[index].trainer_username) {
+      return stack[index];
+    }
+
+    return axios
+      .get(`${BASE_URL}/event/${eventID}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        stack[index] = res.data;
+        setAllEvents(stack);
+        return res.data;
+      })
+      .catch(e => {
+        if (index !== -1) {
+          stack.splice(index, 1);
+          setAllEvents(stack);
+        }
+        return null;
+      });
+
+
+  };
+
+
   const getMealPhoto = async name => {
     try {
       const res = await axios.get(`${BASE_URL}/meal/image${name}`, {
@@ -76,6 +123,84 @@ export const TrainerProvider = ({ children }) => {
     } catch (e) {
       return null;
     }
+  };
+
+  /**************************** */
+  //
+
+  const updateEvent = oneEvent => {
+    const body = new FormData();
+
+    body.append('name', oneEvent.name);
+    body.append('place', oneEvent.place);
+    body.append('date', oneEvent.date);
+    body.append('duration', oneEvent.duration);
+    body.append('price', oneEvent.price);
+    body.append('description', oneEvent.description);
+
+
+    fetch(`${BASE_URL}/event/update/${oneEvent.id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Token ${userInfo.token}`,
+        Accept: '*/*',
+
+      },
+      body: body,
+    })
+      .then(res => res.json())
+      .then(res => {
+        //console.log(res);
+        const eventsCopy = [...events];
+        const index = events.findIndex(ev => ev.id === oneEvent.id);
+
+        eventsCopy[index].name = oneEvent.name;
+        eventsCopy[index].place = oneEvent.place;
+        eventsCopy[index].date = oneEvent.date;
+        eventsCopy[index].duration = oneEvent.duration;
+        eventsCopy[index].price = oneEvent.price;
+        eventsCopy[index].description = oneEvent.description;
+
+        setAllEvents(eventsCopy);
+      })
+      .catch(e => {
+        Alert.alert('Update event error!tuto', `${e}`, [{ text: 'Okay' }]);
+      });
+  };
+
+  const createEvent = oneEvent => {
+    const body = new FormData();
+
+    body.append('name', oneEvent.name);
+    body.append('place', oneEvent.place);
+    body.append('date', oneEvent.date);
+    body.append('duration', oneEvent.duration);
+    body.append('price', oneEvent.price);
+    body.append('description', oneEvent.description);
+
+
+    fetch(`${BASE_URL}/event/create`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Token ${userInfo.token}`,
+        Accept: '*/*',
+
+      },
+      body: body,
+    })
+      .then(res => res.json())
+      .then(res => {
+        oneEvent.id = res.id;
+        oneEvent.trainer_username = userInfo.username;
+        oneEvent.trainer_full_name = userInfo.full_name;
+
+        const eventsCopy = [...events];
+        eventsCopy.push(oneEvent);
+        setAllEvents(eventsCopy);
+      })
+      .catch(e => {
+        Alert.alert('Create event error!', `${e}`, [{ text: 'Okay' }]);
+      });
   };
 
   const updateMeal = meal => {
@@ -166,6 +291,22 @@ export const TrainerProvider = ({ children }) => {
       });
   };
 
+  const deleteEvent = eventID => {
+    axios
+      .delete(`${BASE_URL}/event/delete/${eventID}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(() => {
+        const data = [...events];
+        const index = events.findIndex(event => event.id === eventID);
+        data.splice(index, 1);
+        setAllEvents(data);
+      })
+      .catch(e => {
+        Alert.alert('Delete event error!', `${e}`, [{ text: 'Okay' }]);
+      });
+  };
+
   const getUserInfo = userID => {
     const stack = [...followers];
     const index = stack.findIndex(follower => follower.client_id === userID);
@@ -210,10 +351,16 @@ export const TrainerProvider = ({ children }) => {
           ? {
               followers,
               meals,
+              events,
               getFollowers,
               getUserInfo,
               getMeals,
+              updateEvent,
+              createEvent,
+              getAllEvents,
+              deleteEvent,
               getMealInfo,
+              getEventInfo,
               getMealPhoto,
               updateMeal,
               createMeal,

@@ -39,6 +39,16 @@ class Validator {
     text = text.replace(/\s+/g, ' ').trim();
     return text.length >= 10 && text.length <= 500 ? text : false;
   }
+
+  validateDateLength(text) {
+    text = text.replace(/\s+/g, ' ');
+    return text.length = 10 ? text : false;
+  }
+
+  validateDateFormat(text) {
+    text = text.replace(/\s/g, '');
+    return /^[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(text) ? text : false;
+  }
 }
 
 export default new Validator();

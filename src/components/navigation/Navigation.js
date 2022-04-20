@@ -19,6 +19,7 @@ import FavouriteTrainersListScreen from '../../screens/client/FavouriteTrainersL
 import GettingCallScreen from '../../screens/shared/GettingCallScreen';
 import VideoCallScreen from '../../screens/shared/VideoCallScreen';
 import MealInfoScreen from '../../screens/shared/MealInfoScreen';
+import EventInfoScreen from '../../screens/shared/EventInfoScreen';
 import { AuthContext } from '../../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
@@ -35,8 +36,12 @@ const HomeNavigator = () => {
       ? [
           { title: 'Trainer profile', component: TopTabNavigator },
           { title: 'Meal info', component: MealInfoScreen },
+          //{ title: 'Event info', component: EventInfoScreen },
         ]
-      : [{ title: 'Meal info', component: MealInfoScreen }];
+      : [
+        { title: 'Meal info', component: MealInfoScreen },
+        { title: 'Event info', component: EventInfoScreen },
+      ];
 
   return (
     <TabNavigator
@@ -58,6 +63,7 @@ const FavouritesNavigator = () => {
       ? [
           { title: 'Trainer profile', component: TopTabNavigator },
           { title: 'Meal info', component: MealInfoScreen },
+          { title: 'Event info', component: EventInfoScreen },
         ]
       : [{ title: 'Follower profile', component: UserProfileScreen }];
 

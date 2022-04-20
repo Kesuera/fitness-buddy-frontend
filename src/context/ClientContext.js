@@ -8,10 +8,74 @@ export const ClientContext = createContext();
 
 export const ClientProvider = ({ children }) => {
   const [trainers, setTrainers] = useState([]);
+  const [events, setAllEvents] = useState([]);
+  const [singleEvent, setSingleEvent] = useState({});
   const [favTrainers, setFavTrainers] = useState([]);
   const [meals, setMeals] = useState([]);
   const [trainerMeals, setTrainerMeals] = useState([]);
+  const [trainerEvents, setTrainerEvents] = useState([]);
   const { userInfo } = useContext(AuthContext);
+
+  const getEventInfo = eventID => {
+    const stackEvents = [...events];
+    const stackTrainerEvents = [...trainerEvents];
+    const indexEvents = stackEvents.findIndex(oneEvent => oneEvent.id === eventID);
+    const indexTrainerEvents = stackTrainerEvents.findIndex(
+      obj => obj.events.findIndex(oneEvent => oneEvent.id === eventID) !== -1
+    );
+    let indexInTrainerEvents = -1;
+
+    if (indexEvents !== -1 && stackEvents[indexEvents].trainer_username) {
+      return stackEvents[indexEvents];
+    }
+
+    if (indexTrainerEvents !== -1) {
+      indexInTrainerEvents = stackTrainerEvents[
+        indexTrainerEvents
+      ].events.findIndex(oneEvent => oneEvent.id === eventID);//?????
+      if (
+        indexInTrainerEvents !== -1 &&
+        stackTrainerEvents[indexTrainerEvents].events[indexInTrainerEvents]
+          .trainer_username
+      ) {
+        return stackTrainerEvents[indexTrainerEvents].events[indexInTrainerEvents];
+      }
+    }
+    return axios
+    .get(`${BASE_URL}/event/${eventID}`, {
+      headers: { Authorization: `Token ${userInfo.token}` },
+    })
+    .then(res => {
+      stackEvents[indexEvents] = res.data;
+      setAllEvents(stackEvents);
+
+      if (indexInTrainerEvents !== -1) {
+        stackTrainerEvents[indexTrainerEvents].events[indexInTrainerEvents] =
+          res.data;
+        setTrainerEvents(stackTrainerEvents);
+      }
+
+      return res.data;
+    })
+    .catch(e => {
+      console.log('Error');
+      if (indexEvents !== -1) {
+        stackEvents.splice(indexEvents, 1);
+        setEvents(stackEvents);
+      }
+      if (indexInTrainerEvents !== -1) {
+        stackTrainerEvents[indexTrainerEvents].events.splice(
+          indexInTrainerEvents,
+          1
+        );
+        setTrainerEvents(stackTrainerEvents);
+      }
+      return null;
+    });
+
+
+  }
+
 
   const getMealInfo = mealID => {
     const stackMeals = [...meals];
@@ -126,6 +190,34 @@ export const ClientProvider = ({ children }) => {
       });
   };
 
+  const getTrainerEvents = userID => {
+    const index =
+      trainerEvents.length !== 0
+        ? trainerEvents.findIndex(obj => obj.trainer_id === userID)
+        : -1;
+
+    if (index !== -1) {
+      return trainerEvents[index].events;
+    }
+
+    return axios
+      .get(`${BASE_URL}/event/user/${userID}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        const data = [...trainerEvents];
+        data.push({ trainer_id: userID, events: res.data });
+        setTrainerEvents(data);
+        return res.data;
+      })
+      .catch(e => {
+        Alert.alert('Events error!', `${e}`, [{ text: 'Okay' }]);
+        return null;
+      });
+  };
+    
+
+
   const getUserInfo = userID => {
     const stack = [...trainers];
     const index = stack.findIndex(trainer => trainer.id === userID);
@@ -219,6 +311,37 @@ export const ClientProvider = ({ children }) => {
       });
   };
 
+  const getAllEvents = () => {
+    axios
+      .get(`${BASE_URL}/event/user/${userInfo.id}`, {
+        headers: { Authorization: `Token ${userInfo.token}` },
+      })
+      .then(res => {
+        // console.log(res.data);
+        let events = res.data;
+        setAllEvents(events);
+      }
+      )
+      .catch(e => {
+        Alert.alert(`Events error!`, `${e}`, [{ text: 'Okay' }]);
+      });
+  }
+
+  // const getEventInfo = eventID => {
+  //   axios
+  //     .get(`${BASE_URL}/event/${eventID}`, {
+  //       headers: { Authorization: `Token ${userInfo.token}` },
+  //     })
+  //     .then(res => {
+  //       let singleEvent = res.data;
+  //       setSingleEvent(singleEvent);
+  //     }
+  //     )
+  //     .catch(e => {
+  //       console.log(`get event info error ${e}`);
+  //     });
+  // }
+
   return (
     <ClientContext.Provider
       value={
@@ -227,13 +350,18 @@ export const ClientProvider = ({ children }) => {
               meals,
               trainers,
               favTrainers,
+              events,
+              singleEvent,
               getUserInfo,
               getTrainers,
               followTrainer,
               unfollowTrainer,
               getTrainerMeals,
+              getTrainerEvents,
               getMeals,
               getMealInfo,
+              getAllEvents,
+              getEventInfo
             }
           : null
       }
