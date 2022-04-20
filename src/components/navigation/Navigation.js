@@ -36,7 +36,7 @@ const HomeNavigator = () => {
       ? [
           { title: 'Trainer profile', component: TopTabNavigator },
           { title: 'Meal info', component: MealInfoScreen },
-          //{ title: 'Event info', component: EventInfoScreen },
+          { title: 'Event info', component: EventInfoScreen },
         ]
       : [
         { title: 'Meal info', component: MealInfoScreen },

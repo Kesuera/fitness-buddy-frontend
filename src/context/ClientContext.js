@@ -14,7 +14,7 @@ export const ClientProvider = ({ children }) => {
   const [meals, setMeals] = useState([]);
   const [trainerMeals, setTrainerMeals] = useState([]);
   const [trainerEvents, setTrainerEvents] = useState([]);
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo , logout} = useContext(AuthContext);
 
   const getEventInfo = eventID => {
     const stackEvents = [...events];
@@ -120,17 +120,25 @@ export const ClientProvider = ({ children }) => {
         return res.data;
       })
       .catch(e => {
-        if (indexMeals !== -1) {
-          stackMeals.splice(indexMeals, 1);
-          setMeals(stackMeals);
+        if (e.response.status === 401) { //pridat
+          logout();
+          return;
         }
-        if (indexInTrainerMeals !== -1) {
-          stackTrainerMeals[indexTrainerMeals].meals.splice(
-            indexInTrainerMeals,
-            1
-          );
-          setTrainerMeals(stackTrainerMeals);
+        if (e.response.status === 404) {
+          if (indexMeals !== -1) {
+            stackMeals.splice(indexMeals, 1);
+            setMeals(stackMeals);
+          }
+          if (indexInTrainerMeals !== -1) {
+            stackTrainerMeals[indexTrainerMeals].meals.splice(
+              indexInTrainerMeals,
+              1
+            );
+            setTrainerMeals(stackTrainerMeals);
+          }
+          return null;
         }
+        Alert.alert('Meal error!', `${e}`, [{ text: 'Okay' }]);
         return null;
       });
   };
@@ -144,6 +152,10 @@ export const ClientProvider = ({ children }) => {
         setMeals(res.data);
       })
       .catch(e => {
+        if (e.response.status === 401) { //pridat
+          logout();
+          return;
+        }
         Alert.alert('Meals error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -160,6 +172,10 @@ export const ClientProvider = ({ children }) => {
         setFavTrainers(favTrainers);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Trainers error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -185,6 +201,10 @@ export const ClientProvider = ({ children }) => {
         return res.data;
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Meals error!', `${e}`, [{ text: 'Okay' }]);
         return null;
       });
@@ -240,8 +260,16 @@ export const ClientProvider = ({ children }) => {
         return data;
       })
       .catch(e => {
-        stack.splice(index, 1);
-        setTrainers(stack);
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
+        if (e.response.status === 404) {
+          stack.splice(index, 1);
+          setTrainers(stack);
+          return null;
+        }
+        Alert.alert('User error!', `${e}`, [{ text: 'Okay' }]);
         return null;
       });
   };
@@ -278,6 +306,10 @@ export const ClientProvider = ({ children }) => {
         setTrainers(trainersCopy);
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Follow error!', `${e}`, [{ text: 'Okay' }]);
       });
   };
@@ -307,6 +339,10 @@ export const ClientProvider = ({ children }) => {
         }
       })
       .catch(e => {
+        if (e.response.status === 401) {
+          logout();
+          return;
+        }
         Alert.alert('Unfollow error!', `${e}`, [{ text: 'Okay' }]);
       });
   };

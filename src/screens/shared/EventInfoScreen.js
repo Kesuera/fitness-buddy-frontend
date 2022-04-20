@@ -206,7 +206,7 @@ import {
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
         {!isEditing ? (
-          <View ScrollView>
+
             <View style={styles.eventHeaderContainer}>
               <View style={styles.eventSubheadingContainer}>
                 <Headline style={{ color: colors.primary }}>
@@ -216,7 +216,7 @@ import {
               </View>
 
             </View>
-          </View>
+
         ) : null}
         {isEditing ? (
           <>
@@ -303,7 +303,7 @@ import {
           <Text style={{ textAlign: 'justify' }}>{eventInfo.duration}</Text>
         )}
         <View style={{ height: 10 }}></View>
-        <Subheading style={{ color: colors.primary }}>Price</Subheading>
+        <Subheading style={{ color: colors.primary }}>Price (€)</Subheading>
         {isEditing ? (
           <NumericInput
             onSubmitEditing={Keyboard.dismiss}
