@@ -115,13 +115,24 @@ const EventListScreen = ({ navigation, route }) => {
         value={eventQuery}
         /> */}
 
-        {events.map(eventInfo => {
-          return specEvent(eventInfo);
-        })}
+        
+        {events.map(eventInfo => {return specEvent(eventInfo);})}
 
       </ScrollView>
+      {userInfo.type === 'trainer' ? (
+        <FAB
+          style={[styles.editButton, { backgroundColor: colors.primary }]}
+          icon="plus"
+          onPress={() => {
+            navigation.navigate('Event info', {
+              eventID: null,
+            });
+          }}
+        />
+      ) : null}
       {/* <View style={styles.containerChild}></View> */}
     </View>
+    
   );
 };
 
@@ -132,6 +143,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 0,
+  },
+  editButton: {
+    position: 'absolute',
+    marginRight: 40,
+    marginBottom: 40,
+    right: 0,
+    bottom: 0,
   },
   // containerChild:{
   //   flex: 0.05,
