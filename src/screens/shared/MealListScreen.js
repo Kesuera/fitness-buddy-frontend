@@ -4,6 +4,7 @@ import { List, FAB, Button, IconButton, useTheme } from 'react-native-paper';
 import { TrainerContext } from '../../context/TrainerContext';
 import { AuthContext } from '../../context/AuthContext';
 import { ClientContext } from '../../context/ClientContext';
+import { ConnectionContext } from '../../context/ConnectionContext';
 
 const MealListScreen = ({ navigation, route }) => {
   const { userInfo } = useContext(AuthContext);
@@ -19,18 +20,21 @@ const MealListScreen = ({ navigation, route }) => {
   const [trainerMeals, setTrainerMeals] = useState([]);
   const { favTrainers } =
     userInfo.type === 'trainer' ? {} : useContext(ClientContext);
+  const { connection } = useContext(ConnectionContext);
 
   useEffect(() => {
     const fetchData = async () => {
       if (route.params?.userID) {
         const data = await getTrainerMeals(route.params.userID);
-        setTrainerMeals(data);
+        if (data) {
+          setTrainerMeals(data);
+        }
       } else {
         await getMeals();
       }
     };
     fetchData();
-  }, [favTrainers]);
+  }, [favTrainers, connection]);
 
   const handleDelete = mealInfo => {
     Alert.alert(`Deleting ${mealInfo.name}`, 'Are you sure?', [

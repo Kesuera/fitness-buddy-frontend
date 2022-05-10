@@ -18,8 +18,10 @@ import { ClientContext } from '../../context/ClientContext';
 import { TrainerContext } from '../../context/TrainerContext';
 import { AuthContext } from '../../context/AuthContext';
 import { VideoCallContext } from '../../context/VideoCallContext';
+import { ConnectionContext } from '../../context/ConnectionContext';
 
 const UserProfileScreen = ({ route, navigation }) => {
+  const { connection } = useContext(ConnectionContext);
   const { colors } = useTheme();
   const { userID } = route.params;
   const { userInfo } = useContext(AuthContext);
@@ -37,7 +39,11 @@ const UserProfileScreen = ({ route, navigation }) => {
       const user = await getUserInfo(userID);
       if (!user) {
         navigation.pop();
-        Alert.alert('Error!', 'User does not exist.', [{ text: 'Okay' }]);
+        if (!connection) {
+          Alert.alert('Error!', 'No internet connection.');
+        } else {
+          Alert.alert('Error!', 'User does not exist.', [{ text: 'Okay' }]);
+        }
         return;
       }
       setProfileInfo(user);

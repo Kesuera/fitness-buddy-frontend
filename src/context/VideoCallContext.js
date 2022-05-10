@@ -12,8 +12,10 @@ import {
 } from 'react-native-webrtc';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from './AuthContext';
+import { ConnectionContext } from './ConnectionContext';
 import Utils from '../components/call/Utils';
 import * as Navigation from '../components/navigation/NavigationRef';
+import { Alert } from 'react-native';
 
 // source code: https://www.youtube.com/watch?v=pv3UHYwgxnM&t=795s
 
@@ -23,6 +25,7 @@ const configuration = { iceServers: [{ url: 'stun:stun.l.google.com:19302' }] };
 
 export const VideoCallProvider = ({ children }) => {
   const { userInfo } = useContext(AuthContext);
+  const { connection } = useContext(ConnectionContext);
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [userInCall, setUserInCall] = useState({});
@@ -97,6 +100,11 @@ export const VideoCallProvider = ({ children }) => {
   };
 
   const create = async (calleeUsername, calleeFullname) => {
+    if (!connection) {
+      Alert.alert('Error', 'No internet connection.');
+      return;
+    }
+
     connecting.current = true;
 
     await setupWebrtc(calleeFullname);

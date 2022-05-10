@@ -10,11 +10,13 @@ import {
   TextInput,
 } from 'react-native-paper';
 import { AuthContext } from '../../context/AuthContext';
+import { ConnectionContext } from '../../context/ConnectionContext';
 import ValidationError from '../../components/validation/ValidationError';
 import Validator from '../../components/validation/Validator';
 
 const YouScreen = () => {
   const { colors } = useTheme();
+  const { connection } = useContext(ConnectionContext);
   const { userInfo, updateProfile } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [email, setEmail] = useState(userInfo.email);
@@ -184,7 +186,7 @@ const YouScreen = () => {
           )}
         </View>
       </ScrollView>
-      {isEditing && !keyboardOpen ? (
+      {isEditing && !keyboardOpen && connection ? (
         <FAB
           style={[
             styles.editCancelButton,
@@ -194,7 +196,7 @@ const YouScreen = () => {
           onPress={() => handleEditCancel()}
         />
       ) : null}
-      {!keyboardOpen ? (
+      {!keyboardOpen && connection ? (
         <FAB
           style={[styles.editButton, { backgroundColor: colors.primary }]}
           icon={isEditing ? 'check' : 'pencil'}

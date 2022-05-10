@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView, Keyboard, Alert } from 'react-native';
 import {
   Text,
   Headline,
-  Title,
   TextInput,
   FAB,
   Subheading,
@@ -11,7 +10,6 @@ import {
   Paragraph,
   Button,
   Avatar,
-  Card,
 } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
 import NumericInput from 'react-native-numeric-input';
@@ -22,10 +20,12 @@ import Validator from '../../components/validation/Validator';
 import ValidationError from '../../components/validation/ValidationError';
 import { BASE_URL } from '../../config';
 import { ClientContext } from '../../context/ClientContext';
+import { ConnectionContext } from '../../context/ConnectionContext';
 
 const MealInfoScreen = ({ route, navigation }) => {
   const { colors } = useTheme();
   const { mealID } = route.params;
+  const { connection } = useContext(ConnectionContext);
   const { userInfo } = useContext(AuthContext);
   const { getMealInfo } =
     userInfo.type === 'trainer'
@@ -58,7 +58,11 @@ const MealInfoScreen = ({ route, navigation }) => {
       const meal = await getMealInfo(mealID);
       if (!meal) {
         navigation.pop();
-        Alert.alert('Error!', 'Meal does not exist.', [{ text: 'Okay' }]);
+        if (!connection) {
+          Alert.alert('Error!', 'No internet connection.');
+        } else {
+          Alert.alert('Error!', 'Meal does not exist.', [{ text: 'Okay' }]);
+        }
         return;
       }
       setMealInfo(meal);
@@ -121,7 +125,7 @@ const MealInfoScreen = ({ route, navigation }) => {
             photo_path: photo ? photo : null,
           };
           if (mealID) {
-            updateMeal(meal, mealID);
+            updateMeal(meal);
           } else {
             navigation.pop();
             createMeal(meal);
@@ -187,13 +191,17 @@ const MealInfoScreen = ({ route, navigation }) => {
               {mealInfo.photo_path ? (
                 <Avatar.Image
                   size={175}
-                  source={{
-                    uri: `${BASE_URL}/meal/image${mealInfo.photo_path}`,
-                    method: 'GET',
-                    headers: {
-                      Authorization: `Token ${userInfo.token}`,
-                    },
-                  }}
+                  source={
+                    connection
+                      ? {
+                          uri: `${BASE_URL}/meal/image${mealInfo.photo_path}`,
+                          method: 'GET',
+                          headers: {
+                            Authorization: `Token ${userInfo.token}`,
+                          },
+                        }
+                      : { uri: mealInfo.photo_path.uri }
+                  }
                 />
               ) : (
                 <Avatar.Icon

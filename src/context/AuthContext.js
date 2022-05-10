@@ -1,14 +1,16 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { BASE_URL } from '../config';
+import { ConnectionContext } from './ConnectionContext';
 
 // source code: https://github.com/samironbarai/rn-auth/blob/main/src/context/AuthContext.js
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { connection } = useContext(ConnectionContext);
   const [splashLoading, setSplashLoading] = useState(false);
   const [userInfo, setUserInfo] = useState({});
 
@@ -21,6 +23,11 @@ export const AuthProvider = ({ children }) => {
     password,
     password_again
   ) => {
+    if (!connection) {
+      Alert.alert('Error!', 'No internet connection.');
+      return;
+    }
+
     axios
       .post(`${BASE_URL}/user/register`, {
         username,
@@ -48,6 +55,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = (username, password) => {
+    if (!connection) {
+      Alert.alert('Error!', 'No internet connection.');
+      return;
+    }
+
     axios
       .post(`${BASE_URL}/user/login`, {
         username,
@@ -66,25 +78,56 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    if (!connection) {
+      AsyncStorage.multiRemove([
+        'userInfo',
+        'trainers',
+        'favTrainers',
+        'meals',
+        'trainerMeals',
+        'followers',
+        'dataToSync',
+      ]);
+      setUserInfo({});
+      return;
+    }
+
     axios
       .delete(`${BASE_URL}/user/logout`, {
         headers: { Authorization: `Token ${userInfo.token}` },
       })
       .then(res => {
-        AsyncStorage.removeItem('userInfo');
+        AsyncStorage.multiRemove([
+          'userInfo',
+          'trainers',
+          'favTrainers',
+          'meals',
+          'trainerMeals',
+          'followers',
+          'dataToSync',
+        ]);
         setUserInfo({});
       })
       .catch(e => {
-        if (e.response.status === 401) {
-          AsyncStorage.removeItem('userInfo');
-          setUserInfo({});
-          return;
-        }
-        Alert.alert('Logout error!', `${e}`, [{ text: 'Okay' }]);
+        AsyncStorage.multiRemove([
+          'userInfo',
+          'trainers',
+          'favTrainers',
+          'meals',
+          'trainerMeals',
+          'followers',
+          'dataToSync',
+        ]);
+        setUserInfo({});
+        return;
       });
   };
 
   const updateProfile = (email, phone_number, description) => {
+    if (!connection) {
+      return;
+    }
+
     axios
       .put(
         `${BASE_URL}/user/update`,

@@ -2,14 +2,16 @@ import React, { useContext, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
 import { TrainerContext } from '../../context/TrainerContext';
+import { ConnectionContext } from '../../context/ConnectionContext';
 
 const FollowerListScreen = ({ navigation }) => {
   const { colors } = useTheme();
+  const { connection } = useContext(ConnectionContext);
   const { followers, getFollowers } = useContext(TrainerContext);
 
   useEffect(() => {
     getFollowers();
-  }, []);
+  }, [connection]);
 
   const item = followerInfo => {
     return (
